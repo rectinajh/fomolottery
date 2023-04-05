@@ -1,0 +1,18 @@
+{
+    "solidity.linter": "solium",
+    "solidity.soliumRules": {
+        "imports-on-top": 0,
+        "variable-declarations": 0,
+        "indentation": [
+            "warning",
+            4
+        ],
+        "quotes": [
+            "warning",
+            "double"
+        ],
+        "security/no-inline-assembly": 1,
+        "security/no-assign-params": 1,
+        "security/no-call-value": 1
+    }
+}
