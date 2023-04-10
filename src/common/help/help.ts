@@ -4,7 +4,13 @@
 
 import './ExString';
 import { BigNumber } from "bignumber.js";
+// import * as Web3 from "web3";
+// import Web3 from "web3";
+
 import * as Web3 from "web3";
+
+
+
 
 
 export const help = {
@@ -358,13 +364,24 @@ function getEtherStringForShow(etherWei: string | BigNumber, maxLength: number =
 
 }
 
-
 function getInjectedWeb3(): Web3 {
 	let injectedWeb3: Web3 = null;
-	try {
-		//捕获浏览器全局的web3实例
-		injectedWeb3 = eval('web3');
-	} catch (ex) { };
-
+  
+	// 使用 window.ethereum 替代旧的 web3 对象
+	if (window.ethereum) {
+	  injectedWeb3 = new Web3(window.ethereum);
+	}
+  
 	return injectedWeb3;
-}
+  }
+
+
+// function getInjectedWeb3(): Web3 {
+// 	let injectedWeb3: Web3 = null;
+// 	try {
+// 		//捕获浏览器全局的web3实例
+// 		injectedWeb3 = eval('web3');
+// 	} catch (ex) { };
+
+// 	return injectedWeb3;
+// }

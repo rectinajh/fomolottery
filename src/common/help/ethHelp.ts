@@ -34,6 +34,8 @@ export class EthHelp{
      * @param rpcUrl 要访问的以太坊节点url,如要通过url进行连接，这里不传
      */
     constructor(injectedWeb3:Web3,rpcUrl?:string){
+
+       
         if(null != injectedWeb3){
             this._web3 = injectedWeb3;
         }else{
@@ -60,12 +62,21 @@ export class EthHelp{
 	 * @param abiDefinition abi数组
 	 * @param constractAddress 合约地址
 	 */
-	public async getContractInstance(abiDefinitions:Web3.AbiDefinition[], constractAddress:ConstractAddress){
-		//根据合约名称读取对应位置的abi.json
-		//获取到合约实例, TODO: at是个同步方法！！！！！！
-        const constractInst:Web3.ContractInstance = this.web3.eth.contract(abiDefinitions).at(constractAddress);
-		return constractInst;
-    }
+	// public async getContractInstance(abiDefinitions:Web3.AbiDefinition[], constractAddress:ConstractAddress){
+	// 	//根据合约名称读取对应位置的abi.json
+	// 	//获取到合约实例, TODO: at是个同步方法！！！！！！
+    //     const constractInst:Web3.ContractInstance = this.web3.eth.contract(abiDefinitions).at(constractAddress);
+	// 	return constractInst;
+    // }
+
+      public async getContractInstance(abiDefinitions: Web3.AbiDefinition[], contractAddress: ConstractAddress) {
+        // 根据合约名称读取对应位置的abi.json
+        // 获取到合约实例
+        const contractInstance: Web3.ContractInstance = new this.web3.eth.Contract(abiDefinitions, contractAddress);
+        return contractInstance;
+      }
+      
+      
     
     //------------------------只读接口 start----------------------
     
@@ -75,7 +86,7 @@ export class EthHelp{
      */
     public async getDefauleAccount(){
         return await help.toPromise<Error,WalletAddress>((callback)=>{
-            return callback(null,this._web3.eth.defaultAccount);
+            return callback(null,this.web3.eth.defaultAccount);
         });
     }
 

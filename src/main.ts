@@ -28,7 +28,7 @@ import { WalletAddress } from "./common/help/ethHelp";
 
     //线上版本
     const constractAddress = '0xddc49dfefc8db2805aa792d04a97e4eb601ffcaa';
-    const web3RpcUrl = "https://mainnet.infura.io";
+    const web3RpcUrl = "https://mainnet.infura.io/v3/6cf7fcc4c68f401b992c73f61c81ce0a";
 
     // //菜鸡测试版本
     // const constractAddress = '0x089b779f92b578f7060a65c49dac1e354c12acbe';
@@ -41,8 +41,14 @@ import { WalletAddress } from "./common/help/ethHelp";
     } else {
         console.log("检查到InjectedWeb3, 直接使用");
         //初始化接口
+        // const ethHelpInstance = new EthHelp(injectedWeb3, rpcUrl);
+        // console.log(ethHelpInstance.web3); // 访问 web3 属性
+
         await Fomo3d.init(help.getInjectedWeb3(), null, constractAddress, null);
     }
+
+
+
 
     //test
     // const testRst = await Fomo3d.inst.pIDxAddr_('0xCfca907B901b322Ff3073732f5F69f1daEcB5DC0');
@@ -740,7 +746,13 @@ import { WalletAddress } from "./common/help/ethHelp";
             const task1 = Fomo3d.inst.getCurrentRoundInfo();
             const task2 = Fomo3d.inst.getCurrentRoundInfo2();
 
+            console.log('Task 1:', task1);
+        console.log('Task 2:', task2);
+
+
             const c = await task1;
+
+            console.log('Task 1 result:', c);
             //bigerNum 转String 存入CurrentRoundInfoClass对象中
             info.ico = c.ico + "";
             info.roundId = c.roundId + "";
@@ -769,6 +781,7 @@ import { WalletAddress } from "./common/help/ethHelp";
             info.timeYear = c.keys.div(1051200).div(new BigNumber('1' + '0'.repeat(18))).toFixed(2).toString();
 
             const roundInfo2 = await task2;
+            console.log('Task 2 result:', roundInfo2);
             info.maxEthName = roundInfo2.maxEthName;
             info.maxEth = roundInfo2.maxEth.toString();
             info.maxAffName = roundInfo2.maxAffName;
@@ -777,7 +790,8 @@ import { WalletAddress } from "./common/help/ethHelp";
             info.last2BuyerName = roundInfo2.last2BuyerName;
             info.last3BuyerName = roundInfo2.last3BuyerName;
         } catch (error) {
-            throw new Error('Could not get any response');
+            // throw new Error('Could not get any response');
+            throw new Error(`Could not get any response: ${error.message}`);
         }
         return info;
     }
@@ -788,10 +802,12 @@ import { WalletAddress } from "./common/help/ethHelp";
             let pricess = await Fomo3d.inst.getBuyPrice();
             //计算
             priceInfo.onePrice = pricess.toString();
-            priceInfo.price = pricess.mul(num).toString();
+            priceInfo.price = pricess.times(num).toString();
             priceInfo.realPrice = pricess.toString(10);
         } catch (error) {
-            throw new Error('Could not get any response');
+            // throw new Error('Could not get any response');
+            console.error('Error in getEthPriceByFront:', error);
+            throw error;
         }
         return priceInfo;
 

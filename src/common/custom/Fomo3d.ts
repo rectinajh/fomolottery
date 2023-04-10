@@ -20,20 +20,38 @@ export type PoolId = BigNumber;
  * 构造时传入web3获取的数组型返回值，自动转换为结构体
  * 注意：参数需按照数组顺序排列,且都需设置null值
  */
+// class EthStruct {
+// 	public parse(originArray: any[]) {
+// 		//检查参数
+// 		if (Object.keys(this).length != originArray.length) {
+// 			throw new Error('构造数据结构失败，数组长度有误');
+// 		}
+// 		//将数组对位赋值到keyvalue
+// 		let index = 0;
+// 		for (const keyName in this) {
+// 			this[keyName] = originArray[index++];
+// 		}
+// 		return this;
+// 	}
+// }
+
 class EthStruct {
-	public parse(originArray: any[]) {
-		//检查参数
-		if (Object.keys(this).length != originArray.length) {
-			throw new Error('构造数据结构失败，数组长度有误');
-		}
-		//将数组对位赋值到keyvalue
-		let index = 0;
-		for (const keyName in this) {
-			this[keyName] = originArray[index++];
-		}
-		return this;
-	}
+    public parse(originArray: any[]) {
+        //检查参数
+        if (Object.keys(this).length != originArray.length) {
+            console.error("Expected keys:", Object.keys(this));
+            console.error("Received array:", originArray);
+            throw new Error('构造数据结构失败，数组长度有误');
+        }
+        //将数组对位赋值到keyvalue
+        let index = 0;
+        for (const keyName in this) {
+            this[keyName] = originArray[index++];
+        }
+        return this;
+    }
 }
+
 //当前回合数据
 class CurrentRoundInfo extends EthStruct {
 	ico: BigNumber = null;	// eth invested during ICO phase
@@ -117,6 +135,15 @@ export class Fomo3d extends EthHelp {
 
 		//获取合约实例
 		Fomo3d._inst.constractInst = await Fomo3d._inst.getContractInstance(abiDefinitions, constractAddress);
+
+		// console.log("this.web3:", this.web3);
+		// console.log("this.web3.eth:", this.web3.eth);
+
+		const ethHelpInstance = new EthHelp(web3, rpcUrl);
+
+		const contractInstance = new ethHelpInstance.web3.eth.Contract(abiDefinitions, constractAddress);
+		
+
 		if (null == Fomo3d._inst.constractInst) {
 			throw new Error(`合约初始化失败! 未获取到合约实例`);
 		}
@@ -143,23 +170,64 @@ export class Fomo3d extends EthHelp {
 	/**
 	 * 获取当前的回合数据
 	 */
+	// public async getCurrentRoundInfo2() {
+	// 	return await help.toPromise<any, CurrentRoundInfo2>((callback) => {
+	// 		return this.constractInst.getCurrentRoundInfo2((err, rst) => {
+	// 			if (err) { return callback(err); }
+	// 			return callback(null, new CurrentRoundInfo2().parse(rst));
+	// 		});
+	// 	});
+	// }
+
 	public async getCurrentRoundInfo2() {
-		return await help.toPromise<any, CurrentRoundInfo2>((callback) => {
-			return this.constractInst.getCurrentRoundInfo2((err, rst) => {
-				if (err) { return callback(err); }
-				return callback(null, new CurrentRoundInfo2().parse(rst));
-			});
+		console.log("Calling getCurrentRoundInfo2 on contract instance:", this.constractInst);
+		return new Promise<CurrentRoundInfo2>(async (resolve, reject) => {
+			try {
+				const result = await this.constractInst.methods.getCurrentRoundInfo2().call();
+				resolve(new CurrentRoundInfo2().parse(result));
+			} catch (err) {
+				reject(err);
+			}
 		});
 	}
+	
+	
+	
 
 	/**
 	 * 获取当前购买钥匙的价格
 	 */
+	// public async getBuyPrice() {
+	// 	return await help.toPromise<any, BigNumber>((callback) => {
+	// 		return this.constractInst.getBuyPrice(callback);
+	// 	});
+	// }
+
+	// public async getBuyPrice() {
+	// 	return await new Promise<BigNumber>((resolve, reject) => {
+	// 		this.constractInst.methods.getBuyPrice().call()
+	// 			.then(result => {
+	// 				resolve(new BigNumber(result));
+	// 			})
+	// 			.catch(error => {
+	// 				reject(error);
+	// 			});
+	// 	});
+	// }
+
 	public async getBuyPrice() {
-		return await help.toPromise<any, BigNumber>((callback) => {
-			return this.constractInst.getBuyPrice(callback);
+		return await new Promise<BigNumber>((resolve, reject) => {
+			this.constractInst.methods.getBuyPrice().call()
+				.then(result => {
+					resolve(new BigNumber(result.toString()));
+				})
+				.catch(error => {
+					reject(error);
+				});
 		});
 	}
+	
+	
 
     /**
      * 查询用户id
