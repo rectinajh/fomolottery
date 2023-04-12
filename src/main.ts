@@ -27,8 +27,8 @@ import { WalletAddress } from "./common/help/ethHelp";
     // const web3RpcUrl = "http://218.89.234.46:9999";
 
     //线上版本
-    const constractAddress = '0xddc49dfefc8db2805aa792d04a97e4eb601ffcaa';
-    const web3RpcUrl = "https://mainnet.infura.io/v3/6cf7fcc4c68f401b992c73f61c81ce0a";
+    const constractAddress = '0x746dA1dde7F7FdB54594eF9855eF596864400Ab2';
+    const web3RpcUrl = "https://api.hyperspace.node.glif.io/rpc/v1";
 
     // //菜鸡测试版本
     // const constractAddress = '0x089b779f92b578f7060a65c49dac1e354c12acbe';
