@@ -8,8 +8,9 @@ import './help';
 import Web3 = require('web3');
 import {BigNumber} from 'bignumber.js';
 import { ENETRESET } from 'constants';
-import * as SolidityFunction from "web3/lib/web3/function";
-import Transaction = require('ethereumjs-tx');
+// import * as SolidityFunction from "web3/lib/web3/function";
+// import Transaction = require('ethereumjs-tx');
+import { Transaction } from 'ethereumjs-tx';
 import * as ethUtil from 'ethereumjs-util';
 
 //钱包地址
@@ -20,6 +21,9 @@ export type ConstractAddress = string;
 export type TransactionHash = string;
 //hexPayloadData
 export type HexPayloadData = string;
+
+type BigNumberType = ReturnType<typeof BigNumber>;
+
 
 
 export class EthHelp{
@@ -69,12 +73,22 @@ export class EthHelp{
 	// 	return constractInst;
     // }
 
+    //   public async getContractInstance(abiDefinitions: Web3.AbiDefinition[], contractAddress: ConstractAddress) {
+    //     // 根据合约名称读取对应位置的abi.json
+    //     // 获取到合约实例
+    //     const contractInstance: Web3.ContractInstance = this.web3.eth.contract(abiDefinitions, contractAddress);
+    //     return contractInstance;
+    //   }
+
       public async getContractInstance(abiDefinitions: Web3.AbiDefinition[], contractAddress: ConstractAddress) {
         // 根据合约名称读取对应位置的abi.json
         // 获取到合约实例
-        const contractInstance: Web3.ContractInstance = new this.web3.eth.Contract(abiDefinitions, contractAddress);
+        // const contractInstance: Web3.ContractInstance = new this.web3.eth.Contract(abiDefinitions, { address: contractAddress });
+        const contractInstance = new this.web3.eth.Contract(abiDefinitions, contractAddress);
+
         return contractInstance;
       }
+      
       
       
     
@@ -90,12 +104,14 @@ export class EthHelp{
         });
     }
 
+
+
     /**
      * 获取以太币余额
      * @param address 
      */
     public async getEtherWei(address:WalletAddress|ConstractAddress){
-        return await help.toPromise<Error,BigNumber>((callback)=>{
+        return await help.toPromise<Error,BigNumberType>((callback)=>{
             return this.web3.eth.getBalance(address,callback);
         });
     }
@@ -109,7 +125,7 @@ export class EthHelp{
      * @param to 
      * @param value 
      */
-    public async sendTransaction(from:WalletAddress, to:WalletAddress|ConstractAddress, value?:BigNumber, data?:string, gas?:BigNumber, gasPrice?:BigNumber, nonce?:number){
+    public async sendTransaction(from:WalletAddress, to:WalletAddress|ConstractAddress, value?:BigNumberType, data?:string, gas?:BigNumberType, gasPrice?:BigNumberType, nonce?:number){
         const txData:Web3.TxData = {
             from: from,
             to: to,
@@ -127,7 +143,7 @@ export class EthHelp{
     /**
      * 通过私钥发送交易
      */
-    public async sendTransactionByKey(privateKey:string, from:WalletAddress, to:WalletAddress|ConstractAddress, value?:BigNumber, data?:string, gasLimit?:BigNumber, gasPrice?:BigNumber, nonce?:number){
+    public async sendTransactionByKey(privateKey:string, from:WalletAddress, to:WalletAddress|ConstractAddress, value?:BigNumberType, data?:string, gasLimit?:BigNumberType, gasPrice?:BigNumberType, nonce?:number){
         const txParams = {
             from: from,
             to: to,

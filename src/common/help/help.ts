@@ -3,12 +3,17 @@
  */
 
 import './ExString';
-import { BigNumber } from "bignumber.js";
+// import { BigNumber } from "bignumber.js";
+import BigNumber from 'bignumber.js';
+
 // import * as Web3 from "web3";
 // import Web3 from "web3";
 
 import * as Web3 from "web3";
+// import Web3 from "web3";
 
+
+type BigNumberType = ReturnType<typeof BigNumber>;
 
 
 
@@ -353,14 +358,14 @@ function isStringNull(str: string): boolean {
 	return false;
 }
 
-function getEtherStringForShow(etherWei: string | BigNumber, maxLength: number = 6) {
-	const bigEtherWei = new BigNumber(etherWei.toString());
-	if (bigEtherWei.comparedTo(new BigNumber('1' + '0'.repeat(18))) <= 0) {
-		return bigEtherWei.div(new BigNumber('1' + '0'.repeat(18))).toFixed(maxLength) + ' ether';
+function getEtherStringForShow(etherWei: string | BigNumberType, maxLength: number = 6) {
+	const bigEtherWei =BigNumber(etherWei.toString());
+	if (bigEtherWei.comparedTo(BigNumber('1' + '0'.repeat(18))) <= 0) {
+		return bigEtherWei.div(BigNumber('1' + '0'.repeat(18))).toFixed(maxLength) + ' ether';
 	}
 
-	const integerLength = bigEtherWei.div(new BigNumber('1' + '0'.repeat(18))).toFixed(0).length;
-	return bigEtherWei.div(new BigNumber('1' + '0'.repeat(18))).toFixed(Math.max(2, maxLength - integerLength + 1)) + ' ether';
+	const integerLength = bigEtherWei.div(BigNumber('1' + '0'.repeat(18))).toFixed(0).length;
+	return bigEtherWei.div(BigNumber('1' + '0'.repeat(18))).toFixed(Math.max(2, maxLength - integerLength + 1)) + ' ether';
 
 }
 

@@ -6,13 +6,22 @@
 import { help } from "../help/help";
 import * as Web3 from "web3";
 import { EthHelp, WalletAddress, ConstractAddress, TransactionHash, HexPayloadData } from "../help/ethHelp";
-import { BigNumber } from "bignumber.js";
+// import { BigNumber } from "bignumber.js";
+import BigNumber from 'bignumber.js';
 import { abiDefinitions } from './Fomo3d.abi';
 
 
-export type MatchId = BigNumber;
-export type OrderId = BigNumber;
-export type PoolId = BigNumber;
+// export type MatchId = BigNumber;
+// export type OrderId = BigNumber;
+// export type PoolId = BigNumber;
+
+export type MatchId = typeof BigNumber;
+export type OrderId = typeof BigNumber;
+export type PoolId = typeof BigNumber;
+
+type BigNumberType = ReturnType<typeof BigNumber>;
+
+
 
 
 /**
@@ -54,41 +63,41 @@ class EthStruct {
 
 //当前回合数据
 class CurrentRoundInfo extends EthStruct {
-	ico: BigNumber = null;	// eth invested during ICO phase
-	roundId: BigNumber = null;	// round id 
-	keys: BigNumber = null;	// total keys for round 
-	end: BigNumber = null;	// time round ends
-	start: BigNumber = null;	// time round started
-	pot: BigNumber = null;	// current pot 
-	leadTeamId: BigNumber = null;	// current team ID & player ID in lead 
+	ico: BigNumberType = null;	// eth invested during ICO phase
+	roundId: BigNumberType = null;	// round id 
+	keys: BigNumberType = null;	// total keys for round 
+	end: BigNumberType = null;	// time round ends
+	start: BigNumberType = null;	// time round started
+	pot: BigNumberType = null;	// current pot 
+	leadTeamId: BigNumberType = null;	// current team ID & player ID in lead 
 	leadPlayerAddress: WalletAddress = null;	// current player in leads address 
 	leadPlayerName: string = null;	// current player in leads name
-	whalesEth: BigNumber = null;	// whales eth in for round
-	bearsEth: BigNumber = null;	// bears eth in for round
-	sneksEth: BigNumber = null;	// sneks eth in for round
-	bullsEth: BigNumber = null;	// bulls eth in for round
-	airdrop: BigNumber = null;	// airdrop tracker # & airdrop pot
+	whalesEth: BigNumberType = null;	// whales eth in for round
+	bearsEth: BigNumberType = null;	// bears eth in for round
+	sneksEth: BigNumberType = null;	// sneks eth in for round
+	bullsEth: BigNumberType = null;	// bulls eth in for round
+	airdrop: BigNumberType = null;	// airdrop tracker # & airdrop pot
 }
 
 //当前回合数据2
 class CurrentRoundInfo2 extends EthStruct {
 	maxEthName: string = null;  	// max eth of round player name
-	maxEth: BigNumber = null;		// max eth of round
+	maxEth: BigNumberType = null;		// max eth of round
 	maxAffName: string = null;  	// max invite of round player name
-	maxAffNum: BigNumber = null; 	// max invite of round
+	maxAffNum: BigNumberType = null; 	// max invite of round
 	last1BuyerName: string = null;  // last 1 name of buyer
 	last2BuyerName: string = null;  // last 2 name of buyer
 	last3BuyerName: string = null;  // last 3 name of buyer
 }
 
 class PlayerInfoByAddress extends EthStruct {
-	pID: BigNumber = null; // player ID
+	pID: BigNumberType =  null; // player ID
 	playerName: string = null; // player name
-	keys: BigNumber = null; // keys owned(current round)
-	winnings: BigNumber = null; // winnings vault
-	general: BigNumber = null; // general vault
-	affiliate: BigNumber = null; // affiliate vault
-	eth: BigNumber = null; // player round eth
+	keys: BigNumberType =  null; // keys owned(current round)
+	winnings: BigNumberType = null; // winnings vault
+	general: BigNumberType = null; // general vault
+	affiliate: BigNumberType = null; // affiliate vault
+	eth: BigNumberType = null; // player round eth
 	papaName: string = null; // player's papa's name
 }
 /** 
@@ -96,7 +105,7 @@ class PlayerInfoByAddress extends EthStruct {
 **/
 const defaultId = 1;
 const defaultName = 'god';
-const defaultAddress = '0xbe862AD9AbFe6f22BCb087716c7D89a26051f74C';
+const defaultAddress = '0xD2F3c942Bc1AaEaD58C38801B46535fc7Bd3aA0c';
 
 
 /**
@@ -139,10 +148,24 @@ export class Fomo3d extends EthHelp {
 		// console.log("this.web3:", this.web3);
 		// console.log("this.web3.eth:", this.web3.eth);
 
+		// const ethHelpInstance = new EthHelp(web3, rpcUrl);
+
+		// const contractInstance = ethHelpInstance.web3.eth.contract(abiDefinitions, constractAddress);
+
+
 		const ethHelpInstance = new EthHelp(web3, rpcUrl);
 
-		const contractInstance = new ethHelpInstance.web3.eth.Contract(abiDefinitions, constractAddress);
-		
+		try {
+			const contractInstance = new ethHelpInstance.web3.eth.Contract(abiDefinitions);
+
+			// 设置合约实例的地址
+		contractInstance.options.address = constractAddress;
+		  } catch (error) {
+			console.error('Error creating contract instance:', error);
+		  }
+
+	// 创建一个新的合约实例，仅传递 ABI 定义
+		// const contractInstance = new ethHelpInstance.web3.eth.Contract(abiDefinitions);
 
 		if (null == Fomo3d._inst.constractInst) {
 			throw new Error(`合约初始化失败! 未获取到合约实例`);
@@ -216,10 +239,10 @@ export class Fomo3d extends EthHelp {
 	// }
 
 	public async getBuyPrice() {
-		return await new Promise<BigNumber>((resolve, reject) => {
+		return await new Promise<BigNumberType>((resolve, reject) => {
 			this.constractInst.methods.getBuyPrice().call()
 				.then(result => {
-					resolve(new BigNumber(result.toString()));
+					resolve(BigNumber(result.toString()));
 				})
 				.catch(error => {
 					reject(error);
@@ -234,7 +257,7 @@ export class Fomo3d extends EthHelp {
      * @param address 
      */
 	public async pIDxAddr_(address: WalletAddress) {
-		return await help.toPromise<any, BigNumber>((callback) => {
+		return await help.toPromise<any, BigNumberType>((callback) => {
 			return this.constractInst.pIDxAddr_(address, callback);
 		});
 	}
@@ -257,7 +280,7 @@ export class Fomo3d extends EthHelp {
 	 * 返回秒
      */
 	public async getTimeLeft() {
-		return await help.toPromise<any, BigNumber>((callback) => {
+		return await help.toPromise<any, BigNumberType>((callback) => {
 			return this.constractInst.getTimeLeft(callback);
 		});
 	}
@@ -276,7 +299,7 @@ export class Fomo3d extends EthHelp {
      * @param to 
      * @param amountWei 
      */
-	public async buyXid(from: WalletAddress, etherWei: BigNumber, _affCode: BigNumber = new BigNumber(defaultId), _team: BigNumber = new BigNumber(0)) {
+	public async buyXid(from: WalletAddress, etherWei: BigNumberType, _affCode: BigNumberType, _team: BigNumberType) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000,
@@ -301,7 +324,7 @@ export class Fomo3d extends EthHelp {
      * @param to 
      * @param amountWei 
      */
-	public async buyXaddr(from: WalletAddress, etherWei: BigNumber, _affCode: WalletAddress = defaultAddress, _team: BigNumber = new BigNumber(0)) {
+	public async buyXaddr(from: WalletAddress, etherWei: BigNumberType, _affCode: WalletAddress = defaultAddress, _team: BigNumberType = BigNumber(0)) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000,
@@ -328,7 +351,7 @@ export class Fomo3d extends EthHelp {
      * @param to 
      * @param amountWei 
      */
-	public async buyXname(from: WalletAddress, etherWei: BigNumber, _affCode: string = defaultName, _team: BigNumber = new BigNumber(0)) {
+	public async buyXname(from: WalletAddress, etherWei: BigNumberType, _affCode: string = defaultName, _team: BigNumberType = BigNumber(0)) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000,
@@ -353,7 +376,7 @@ export class Fomo3d extends EthHelp {
 		 * @param to 
 		 * @param amountWei 
 	 */
-	public async reLoadXid(from: WalletAddress, etherWei: BigNumber, _affCode: BigNumber = new BigNumber(defaultId), _team: BigNumber = new BigNumber(0)) {
+	public async reLoadXid(from: WalletAddress, etherWei: BigNumberType, _affCode: BigNumberType = BigNumber(defaultId), _team: BigNumberType = BigNumber(0)) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000
@@ -377,7 +400,7 @@ export class Fomo3d extends EthHelp {
 		 * @param amountWei 
 	 */
 
-	public async reLoadXaddr(from: WalletAddress, etherWei: BigNumber, _affCode: BigNumber, _team: BigNumber = new BigNumber(0)) {
+	public async reLoadXaddr(from: WalletAddress, etherWei: BigNumberType, _affCode: BigNumberType, _team: BigNumberType = BigNumber(0)) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000
@@ -401,7 +424,7 @@ export class Fomo3d extends EthHelp {
 		 * @param to 
 		 * @param amountWei 
 	 */
-	public async reLoadXname(from: WalletAddress, etherWei: BigNumber, _affCode: string, _team: BigNumber = new BigNumber(0)) {
+	public async reLoadXname(from: WalletAddress, etherWei: BigNumberType, _affCode: string, _team: BigNumberType = BigNumber(0)) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000
@@ -444,7 +467,7 @@ export class Fomo3d extends EthHelp {
 
 	}
 
-	public async registerNameXID(from: WalletAddress, _nameString: string, _affCode: BigNumber = new BigNumber(defaultId), _all: boolean = true) {
+	public async registerNameXID(from: WalletAddress, _nameString: string, _affCode: BigNumberType = BigNumber(defaultId), _all: boolean = true) {
 		const txData: Web3.TxData = {
 			from: from,
 			gas: 100 * 10000,

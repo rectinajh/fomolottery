@@ -3,13 +3,22 @@
 import { Fomo3d } from "./common/custom/Fomo3d";
 import * as Web3 from "web3";
 import { help } from "./common/help/help";
-import { BigNumber } from 'bignumber.js';
+// import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
+// import * as BigNumber from 'bignumber.js';
+
 import * as $ from 'jquery';
 import { test, message } from "./common/custom/rpcApi";
 import * as alertify from 'alertify.js';
 import { WalletAddress } from "./common/help/ethHelp";
+import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber';
 
 
+// type BigNumberType = BigNumber;
+type BigNumberType = ReturnType<typeof BigNumber>;
+
+
+// type BigNumberInstance = InstanceType<typeof BigNumber>;
 // 初始化eth
 
 (async function initEth() {
@@ -69,9 +78,21 @@ import { WalletAddress } from "./common/help/ethHelp";
         ethVal = { result: await getEthPriceByFront(1) };  // 获取后台数据
     }
 
-    $('.tixQuotationVal').data('realPrice', new BigNumber(ethVal.result.onePrice));
-    $('.tixQuotationVal').data('onerealPrice', new BigNumber(ethVal.result.onePrice)); // 单价
-    $('.tixQuotationVal').html(new BigNumber(ethVal.result.onePrice).div(new BigNumber('1' + '0'.repeat(18))).toFixed(8).toString());
+    // $('.tixQuotationVal').data('realPrice', new BigNumber(ethVal.result.onePrice));
+    // $('.tixQuotationVal').data('onerealPrice', new BigNumber(ethVal.result.onePrice)); // 单价
+    // $('.tixQuotationVal').html(new BigNumber(ethVal.result.onePrice).div(new BigNumber('1' + '0'.repeat(18))).toFixed(8).toString());
+
+    $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.onePrice));
+
+    $('.tixQuotationVal').data('onerealPrice', BigNumber(ethVal.result.onePrice)); // 单价
+
+    $('.tixQuotationVal').html(
+    BigNumber(ethVal.result.onePrice)
+    .div(BigNumber('1' + '0'.repeat(18)))
+    .toFixed(8)
+    .toString()
+    );
+
 
     // 放到后面统一请求
     // let getmessageData:any;
@@ -294,9 +315,9 @@ import { WalletAddress } from "./common/help/ethHelp";
            
 
 
-            const pot = new BigNumber(roundInfo.pot);
-            const totalInvested = new BigNumber(roundInfo.totalEth);
-            const distributed = new BigNumber(roundInfo.distributedEth);
+            const pot = BigNumber(roundInfo.pot);
+            const totalInvested = BigNumber(roundInfo.totalEth);
+            const distributed = BigNumber(roundInfo.distributedEth);
             const round = roundInfo.roundId;
 
             const potUsdt = parseFloat(pot.mul(oneUSDTTransfrom.result.price).toFixed(5)).toLocaleString();
@@ -319,7 +340,7 @@ import { WalletAddress } from "./common/help/ethHelp";
                 ethVal = { result: await getEthPriceByFront(1) };
             }
 
-            $('.tixQuotationVal').data('onerealPrice', new BigNumber(ethVal.result.onePrice)); // 单价
+            $('.tixQuotationVal').data('onerealPrice', BigNumber(ethVal.result.onePrice)); // 单价
             if ($('#tixToBuy').val()) {
                 var iVal = parseInt(String($("#tixToBuy").val()).replace(" ", "").replace("keys", "").replace("key", "").replace("Keys", "").replace("Key", ""));
             } else {
@@ -352,7 +373,7 @@ import { WalletAddress } from "./common/help/ethHelp";
             const last1BuyerName = help.ascllTransform(roundInfo.last1BuyerName);
             const last2BuyerName = help.ascllTransform(roundInfo.last2BuyerName);
             const last3BuyerName = help.ascllTransform(roundInfo.last3BuyerName);
-            const maxEth = Fomo3d.inst.web3.fromWei(new BigNumber(roundInfo.maxEth), 'ether').toString();
+            const maxEth = Fomo3d.inst.web3.fromWei(BigNumber(roundInfo.maxEth), 'ether').toString();
             const maxAffNum = roundInfo.maxAffNum;
             $('.maxEthName').html(maxEthName);
             $('.maxAffName').html(maxAffName);
@@ -477,18 +498,22 @@ import { WalletAddress } from "./common/help/ethHelp";
     })
 
     // 获取输入框rth变动
+    // type BigNumberType = BigNumber;
 
     async function getQuote(num: number) {
         // console.log(num);
         let priceVal = null;
-        var realPriceVal: BigNumber;
+       
+
+        var realPriceVal: BigNumberType;
+
         if (num) {
-            priceVal = (new BigNumber(parseFloat(ethVal.result.onePrice))).mul(num).div(new BigNumber('1' + '0'.repeat(18)));
-            realPriceVal = new BigNumber(ethVal.result.realPrice).mul(num);
-            $('.tixQuotationVal').data('realPrice', new BigNumber(ethVal.result.realPrice).mul(num).toFixed(8));
+            priceVal = (BigNumber(parseFloat(ethVal.result.onePrice))).mul(num).div(BigNumber('1' + '0'.repeat(18)));
+            realPriceVal = BigNumber(ethVal.result.realPrice).mul(num);
+            $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.realPrice).mul(num).toFixed(8));
         } else {
             priceVal = 0.0000;
-            $('.tixQuotationVal').data('realPrice', new BigNumber(ethVal.result.onePrice));
+            $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.onePrice));
         }
         if (num > 1000) {
             $('.tixQuotationVal').html(priceVal.toFixed(8).toString());
@@ -499,7 +524,7 @@ import { WalletAddress } from "./common/help/ethHelp";
                 ethVal = { result: await getEthPriceByFront(num) };
             }
 
-            $('.tixQuotationVal').html(new BigNumber(ethVal.result.price).div(new BigNumber('1' + '0'.repeat(18))).toString());
+            $('.tixQuotationVal').html(BigNumber(ethVal.result.price).div(BigNumber('1' + '0'.repeat(18))).toString());
 
         } else {
             $('.tixQuotationVal').html(priceVal.toFixed(8).toString());
@@ -513,20 +538,20 @@ import { WalletAddress } from "./common/help/ethHelp";
     //  点击 send ETH
 
     $("#tixBuy").click(function () {
-        const getEth = new BigNumber(String($(".tixQuotationVal").eq(0).data('realPrice')));
+        const getEth = BigNumber(String($(".tixQuotationVal").eq(0).data('realPrice')));
         console.log(getEth.toString());
         buyKeys(getEth, 'tixBuy');
     })
 
     // 点击 Use Vault
     $("#tixReinvest").click(function () {
-        const getEth = new BigNumber(String($(".tixQuotationVal").eq(0).data('realPrice')));
-        buyKeys(new BigNumber(getEth), 'tixReinvest');
+        const getEth = BigNumber(String($(".tixQuotationVal").eq(0).data('realPrice')));
+        buyKeys(BigNumber(getEth), 'tixReinvest');
     });
     // 点击消息条
     $(".buyOneTicket").click(function () {
-        const onegetEthVal = new BigNumber(String($(".tixQuotationVal").eq(0).data('onerealPrice')));
-        buyKeys(new BigNumber(onegetEthVal), 'buyOneTicket');
+        const onegetEthVal = BigNumber(String($(".tixQuotationVal").eq(0).data('onerealPrice')));
+        buyKeys(BigNumber(onegetEthVal), 'buyOneTicket');
     });
     // // 点击链接名字
     $('.buyceo').click(function () {
@@ -583,7 +608,7 @@ import { WalletAddress } from "./common/help/ethHelp";
                 if (badAdivceTypeValnum === 'none') {
                     txHash = await Fomo3d.inst.registerNameXID(setnameaddress, name);
                 } else if (badAdivceTypeValnum === 'id') {
-                    txHash = await Fomo3d.inst.registerNameXID(setnameaddress, name, new BigNumber(badAdivce));
+                    txHash = await Fomo3d.inst.registerNameXID(setnameaddress, name, BigNumber(badAdivce));
                 } else if (badAdivceTypeValnum === 'address') {
                     txHash = await Fomo3d.inst.registerNameXaddr(setnameaddress, name, badAdivce);
                 } else if (badAdivceTypeValnum === 'name') {
@@ -656,7 +681,7 @@ import { WalletAddress } from "./common/help/ethHelp";
 
 
 
-    async function buyKeys(etherWei: BigNumber, clickType: string) {
+    async function buyKeys(etherWei: BigNumberType, clickType: string) {
 
         const myAddress = await Fomo3d.inst.getDefauleAccount();
         let txHash = null;
@@ -670,6 +695,8 @@ import { WalletAddress } from "./common/help/ethHelp";
                 if (badAdivceTypeVal === 'none') {
                     if (clickType === 'tixBuy') {
                         txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, specificAffCode, specificTeam);
+
                     } else if (clickType === 'tixReinvest') {
                         txHash = await Fomo3d.inst.reLoadXid(myAddress, etherWei);
                     } else if (clickType === 'buyOneTicket') {
@@ -680,20 +707,20 @@ import { WalletAddress } from "./common/help/ethHelp";
 
                 } else if (badAdivceTypeVal === 'id') {
                     if (clickType === 'tixBuy') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, new BigNumber(badAdivce));
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
                     } else if (clickType === 'tixReinvest') {
-                        txHash = await Fomo3d.inst.reLoadXid(myAddress, etherWei, new BigNumber(badAdivce));
+                        txHash = await Fomo3d.inst.reLoadXid(myAddress, etherWei, BigNumber(badAdivce));
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, new BigNumber(badAdivce));
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, new BigNumber(badAdivce));
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
                     }
 
                 } else if (badAdivceTypeVal === 'address') {
                     if (clickType === 'tixBuy') {
                         txHash = await Fomo3d.inst.buyXaddr(myAddress, etherWei, badAdivce);
                     } else if (clickType === 'tixReinvest') {
-                        txHash = await Fomo3d.inst.reLoadXaddr(myAddress, etherWei, new BigNumber(badAdivce));
+                        txHash = await Fomo3d.inst.reLoadXaddr(myAddress, etherWei, BigNumber(badAdivce));
                     } else if (clickType === 'buyOneTicket') {
                         txHash = await Fomo3d.inst.buyXaddr(myAddress, etherWei, badAdivce);
                     } else if (clickType === 'buyOneTicket') {
@@ -768,17 +795,17 @@ import { WalletAddress } from "./common/help/ethHelp";
             info.bullsEth = (c.bullsEth).toString(10);
             info.airdrop = (c.airdrop).toString(10);
             //页面上端数据处理
-            info.pot = c.pot.div(new BigNumber('1' + '0'.repeat(18))).toFixed(4).toString();
+            info.pot = c.pot.div(BigNumber('1' + '0'.repeat(18))).toFixed(4).toString();
             info.airdropPercent = "0." + (info.airdrop).substring(20) + "%";
-            info.airdropEth = c.airdrop.div(new BigNumber('1' + '0'.repeat(21))).toFixed(2).toString() + "ETH";
-            info.totalKeys = c.keys.div(new BigNumber('1' + '0'.repeat(18))).toFixed(0).toString();
+            info.airdropEth = c.airdrop.div(BigNumber('1' + '0'.repeat(21))).toFixed(2).toString() + "ETH";
+            info.totalKeys = c.keys.div(BigNumber('1' + '0'.repeat(18))).toFixed(0).toString();
             //ETH 总共数量计算
-            info.totalEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth)).div(new BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
+            info.totalEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
             //Distributed Rewards 计算  
-            info.distributedEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth).sub(c.pot)).div(new BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
+            info.distributedEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth).sub(c.pot)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
             //Time Purchased 计算 365*3600*24 =3153600  315600/30=1051200
-            info.timeS = c.keys.mul(30).div(new BigNumber('1' + '0'.repeat(19))).toFixed(0).toString();
-            info.timeYear = c.keys.div(1051200).div(new BigNumber('1' + '0'.repeat(18))).toFixed(2).toString();
+            info.timeS = c.keys.mul(30).div(BigNumber('1' + '0'.repeat(19))).toFixed(0).toString();
+            info.timeYear = c.keys.div(1051200).div(BigNumber('1' + '0'.repeat(18))).toFixed(2).toString();
 
             const roundInfo2 = await task2;
             console.log('Task 2 result:', roundInfo2);

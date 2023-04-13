@@ -3,6 +3,7 @@
     "sourceMap": true,
     "allowJs": true,
     "module": "commonjs",
+    "esModuleInterop": false,
     "removeComments": true,
     "target": "es2017",
     "typeRoots": [
