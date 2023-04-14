@@ -147,18 +147,32 @@ function ascllTransform(ascllString: string){
 }
 
 
+// //等待x毫秒后执行回调
+// function waitForMS(timeMS: number, callback?) {
+// 	return new Promise((resolve, reject) => {
+// 		if (timeMS <= 0) {
+// 			return resolve();
+// 		}
+// 		//设置定时器
+// 		return setTimeout(() => {
+// 			return resolve();
+// 		}, timeMS);
+// 	});
+// }
+
 //等待x毫秒后执行回调
-function waitForMS(timeMS: number, callback?) {
-	return new Promise((resolve, reject) => {
-		if (timeMS <= 0) {
-			return resolve();
-		}
-		//设置定时器
-		return setTimeout(() => {
-			return resolve();
-		}, timeMS);
-	});
+function waitForMS(timeMS: number, callback?): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        if (timeMS <= 0) {
+            resolve();
+        } else {
+            setTimeout(() => {
+                resolve();
+            }, timeMS);
+        }
+    });
 }
+
 
 /**
  * 格式化日期
@@ -368,6 +382,14 @@ function getEtherStringForShow(etherWei: string | BigNumberType, maxLength: numb
 	return bigEtherWei.div(BigNumber('1' + '0'.repeat(18))).toFixed(Math.max(2, maxLength - integerLength + 1)) + ' ether';
 
 }
+
+declare global {
+	interface Window {
+	  ethereum: any;
+	}
+  }
+
+  
 
 function getInjectedWeb3(): Web3 {
 	let injectedWeb3: Web3 = null;

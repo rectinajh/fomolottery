@@ -213,7 +213,7 @@ type BigNumberType = ReturnType<typeof BigNumber>;
         }
         if (curAddress != newAddress) {
             //todo:
-            window.location.reload(true);
+            window.location.reload();
         }
     }, 2000);
 
@@ -320,9 +320,9 @@ type BigNumberType = ReturnType<typeof BigNumber>;
             const distributed = BigNumber(roundInfo.distributedEth);
             const round = roundInfo.roundId;
 
-            const potUsdt = parseFloat(pot.mul(oneUSDTTransfrom.result.price).toFixed(5)).toLocaleString();
-            const totalInvestedUsdt = parseFloat(totalInvested.mul(oneUSDTTransfrom.result.price).toFixed(2)).toLocaleString();
-            const distributedUsdt = parseFloat(distributed.mul(oneUSDTTransfrom.result.price).toFixed(2)).toLocaleString();
+            const potUsdt = parseFloat(pot.times(oneUSDTTransfrom.result.price).toFixed(5)).toLocaleString();
+            const totalInvestedUsdt = parseFloat(totalInvested.times(oneUSDTTransfrom.result.price).toFixed(2)).toLocaleString();
+            const distributedUsdt = parseFloat(distributed.times(oneUSDTTransfrom.result.price).toFixed(2)).toLocaleString();
 
 
             const totalKeysnum = parseFloat(roundInfo.totalKeys).toLocaleString();
@@ -418,8 +418,8 @@ type BigNumberType = ReturnType<typeof BigNumber>;
                 oneUSDTTransfromVal = '0.0000';
             }
 
-            const userEaringsUsdtVal = parseFloat(userEarings.mul(oneUSDTTransfromVal).toFixed(4)).toLocaleString();
-            const totalGainsUsdtNum = parseFloat(userEarings.mul(oneUSDTTransfromVal).toFixed(4)).toLocaleString();
+            const userEaringsUsdtVal = parseFloat(userEarings.times(oneUSDTTransfromVal).toFixed(4)).toLocaleString();
+            const totalGainsUsdtNum = parseFloat(userEarings.times(oneUSDTTransfromVal).toFixed(4)).toLocaleString();
 
 
             // 更新用户数据
@@ -508,9 +508,9 @@ type BigNumberType = ReturnType<typeof BigNumber>;
         var realPriceVal: BigNumberType;
 
         if (num) {
-            priceVal = (BigNumber(parseFloat(ethVal.result.onePrice))).mul(num).div(BigNumber('1' + '0'.repeat(18)));
-            realPriceVal = BigNumber(ethVal.result.realPrice).mul(num);
-            $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.realPrice).mul(num).toFixed(8));
+            priceVal = (BigNumber(parseFloat(ethVal.result.onePrice))).times(num).div(BigNumber('1' + '0'.repeat(18)));
+            realPriceVal = BigNumber(ethVal.result.realPrice).times(num);
+            $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.realPrice).times(num).toFixed(8));
         } else {
             priceVal = 0.0000;
             $('.tixQuotationVal').data('realPrice', BigNumber(ethVal.result.onePrice));
@@ -684,6 +684,9 @@ type BigNumberType = ReturnType<typeof BigNumber>;
     async function buyKeys(etherWei: BigNumberType, clickType: string) {
 
         const myAddress = await Fomo3d.inst.getDefauleAccount();
+
+        let _affCode = null;
+        let _team = null;
         let txHash = null;
         if (myAddress) {
             jQuery('#loading').modal({ backdrop: 'static', keyboard: false })
@@ -694,26 +697,44 @@ type BigNumberType = ReturnType<typeof BigNumber>;
             try {
                 if (badAdivceTypeVal === 'none') {
                     if (clickType === 'tixBuy') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                         // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, specificAffCode, specificTeam);
 
                     } else if (clickType === 'tixReinvest') {
                         txHash = await Fomo3d.inst.reLoadXid(myAddress, etherWei);
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei);
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                     }
 
                 } else if (badAdivceTypeVal === 'id') {
                     if (clickType === 'tixBuy') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                     } else if (clickType === 'tixReinvest') {
                         txHash = await Fomo3d.inst.reLoadXid(myAddress, etherWei, BigNumber(badAdivce));
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                     } else if (clickType === 'buyOneTicket') {
-                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, BigNumber(badAdivce));
+                        // 假设你已经定义了 _affCode 和 _team 变量，然后调用 buyXid 方法：
+                        txHash = await Fomo3d.inst.buyXid(myAddress, etherWei, _affCode, _team);
+
                     }
 
                 } else if (badAdivceTypeVal === 'address') {
@@ -800,11 +821,11 @@ type BigNumberType = ReturnType<typeof BigNumber>;
             info.airdropEth = c.airdrop.div(BigNumber('1' + '0'.repeat(21))).toFixed(2).toString() + "ETH";
             info.totalKeys = c.keys.div(BigNumber('1' + '0'.repeat(18))).toFixed(0).toString();
             //ETH 总共数量计算
-            info.totalEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
+            info.totalEth = (c.whalesEth.plus(c.bearsEth).plus(c.sneksEth).plus(c.bullsEth)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
             //Distributed Rewards 计算  
-            info.distributedEth = (c.whalesEth.add(c.bearsEth).add(c.sneksEth).add(c.bullsEth).sub(c.pot)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
+            info.distributedEth = (c.whalesEth.plus(c.bearsEth).plus(c.sneksEth).plus(c.bullsEth).minus(c.pot)).div(BigNumber('1' + '0'.repeat(18))).toFixed(3).toString();
             //Time Purchased 计算 365*3600*24 =3153600  315600/30=1051200
-            info.timeS = c.keys.mul(30).div(BigNumber('1' + '0'.repeat(19))).toFixed(0).toString();
+            info.timeS = c.keys.times(30).div(BigNumber('1' + '0'.repeat(19))).toFixed(0).toString();
             info.timeYear = c.keys.div(1051200).div(BigNumber('1' + '0'.repeat(18))).toFixed(2).toString();
 
             const roundInfo2 = await task2;

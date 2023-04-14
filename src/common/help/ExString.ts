@@ -3,6 +3,20 @@
  * 字符串扩展
  */
 
+   // 声明 helpTemp 类型
+   interface helpTemp {
+    // ... 类的属性和方法 ...
+  }
+declare global {
+    interface Global {
+      genString: (...args: any[]) => any;
+    }
+
+  
+  }
+
+    
+
 declare global{
     /**
      * 字符串对象扩展方法
@@ -16,19 +30,29 @@ declare global{
 		splitNoReturnEmpty(seq):Array<string>;
     }
 
+    interface Global {
+        help: helpTemp;
+      }
+
+ 
+
     namespace NodeJS {
 		/**
 		 * global自身
 		 */
-        interface Global {
-			tagString: (...params)=>string;
-			genString: (...params)=>StringGenerator;
-
-        }
+            interface Global {
+                tagString: any; // 或者指定为您想要的具体类型
+                genString: any; // 或者指定为您想要的具体类型
+                // help: helpTemp; // 或者指定为您想要的具体类型
+            }   
     }
-    const tagString: typeof global.tagString;
-    const genString: typeof global.tagString;
 }
+
+// 声明全局 help 变量
+declare const help: helpTemp;
+
+// const tagString: typeof globalThis.tagString;
+// const help: typeof globalThis.help;
 
 //格式化，示例："我的名字叫{0},我{1}一个好人".format("小明","是");
 String.prototype.format = function():string{
@@ -55,7 +79,7 @@ String.prototype.format = function():string{
  * 使用方法:tag+模板字符串
  * 例如： let str = tagString `string is :${obj}`;
  */
-global.tagString = function(strs:string[],...values):string{
+globalThis.tagString = function(strs:string[],...values):string{
     let str = strs[0];
     //按顺序间隔进行拼接
     for(let i=1; i<strs.length; i++){
@@ -72,12 +96,40 @@ global.tagString = function(strs:string[],...values):string{
     return str;
 }
 
+// 定义 tagString 函数
+// export class StringGenerator {
+//     // 生成的字符串
+//     private args: any[];
+//     private str: string;
+
+//     constructor(args: any[]) {
+//         this.args = args;
+//     }
+
+//     // 只会生成一次
+//     toString() {
+//         if (!this.str) {
+//             // 进行拼接处理
+//             this.str = globalThis.tagString(...this.args);
+//         }
+//         // 返回拼接后的字符串
+//         return this.str;
+//     }
+
+//     // 取值也调用 toString
+//     valueOf() {
+//         return this.toString();
+//     }
+// }
+
+  
+
 /**
  * 解析模板字符串生成器,不会立即拼接字符串，第一次调用生成器的toString或valueOf方法才会生成字符串
  * 对于参数较多或包含object的情况，使用本方法能减少不必要的拼接开销
  * returns {StringGenerator}
  */
-global.genString = function():StringGenerator{
+globalThis.genString = function():StringGenerator{
     return new StringGenerator(arguments);
 };
 /**
@@ -95,7 +147,7 @@ export class StringGenerator{
     toString() {
         if (!this.str) {
             //进行拼接处理
-            this.str = tagString(...this.args);
+            this.str = globalThis.tagString(...this.args);
         }
         //返回拼接后的字符串
         return this.str;
@@ -104,7 +156,7 @@ export class StringGenerator{
     valueOf() {
         if (!this.str) {
             //进行拼接处理
-            this.str = tagString(...this.args);
+            this.str = globalThis.tagString(...this.args);
         }
         //返回拼接后的字符串
         return this.str;

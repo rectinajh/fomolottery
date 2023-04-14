@@ -1,18 +1,32 @@
 const path = require('path');
-const merge = require('webpack-merge');
+// const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
+
+const { resolve } = require('path');
+
 // 引入通用webpack配置文件
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
+    entry: './src/main.ts',
     module: {
         rules:
             [
                 {
                     test: /\.tsx?$/,
                     loader: 'ts-loader'
+                    
                 },
             ]
     },
+
+    resolve: {
+        // ...
+    
+        fallback: {
+          "assert": require.resolve("assert/")
+        },
+      },
     // 使用 source-map
     devtool: 'source-map',
     // 对 webpack-dev-server 进行配置
@@ -33,3 +47,5 @@ module.exports = merge(common, {
         filename: 'bundle.min.js'
     }
 });
+
+
