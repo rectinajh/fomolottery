@@ -24,7 +24,9 @@ module.exports = merge(common, {
         // ...
     
         fallback: {
+            "stream": require.resolve("stream-browserify"),
           "assert": require.resolve("assert/")
+          
         },
       },
     // 使用 source-map

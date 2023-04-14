@@ -250,7 +250,7 @@ declare module 'web3' {
                 callback: (err: Error, transaction: Web3.Transaction) => void,
             ): void;
 
-            contract(abi: Web3.AbiDefinition[]): Web3.Contract<any>;
+            Contract(abi: Web3.AbiDefinition[]): Web3.Contract<any>;
 
             // TODO block param
             getBalance(addressHexString: string): BigNumber.BigNumber;

@@ -84,7 +84,7 @@ export class EthHelp{
         // 根据合约名称读取对应位置的abi.json
         // 获取到合约实例
         // const contractInstance: Web3.ContractInstance = new this.web3.eth.Contract(abiDefinitions, { address: contractAddress });
-        const contractInstance = new this.web3.eth.Contract(abiDefinitions, contractAddress);
+        const contractInstance = this.web3.eth.Contract(abiDefinitions);
 
         return contractInstance;
       }
